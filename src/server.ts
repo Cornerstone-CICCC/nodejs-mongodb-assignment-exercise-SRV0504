@@ -1,20 +1,22 @@
-import express from 'express';
-import mongoose from 'mongoose';
+import express from 'express'
+import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import productRoutes from './product.routes'
+
 dotenv.config()
 
-// Create server
-const app = express();
+const app = express()
+app.use(express.json())
 
-// Middleware
-app.use(express.json());
+// 👇 después de declarar app
+app.use('/products', productRoutes)
 
-// Connect to MongoDB and Start Server
-const PORT = process.env.PORT || 3000;
-mongoose
-  .connect("mongodb+srv://<db_user>:<db_password>@ciccc.o8yo3tc.mongodb.net/<db_name>?retryWrites=true&w=majority&appName=<cluster_name>")
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
-  })
-  .catch((err) => console.error('Failed to connect to MongoDB', err));
+mongoose.connect(process.env.MONGO_URI as string)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch(err => console.error("MongoDB connection error:", err))
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
